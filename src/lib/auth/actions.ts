@@ -60,6 +60,24 @@ export async function login(formData: FormData): Promise<AuthResult> {
   redirect(routes.dashboard);
 }
 
+/**
+ * useActionState-compatible wrappers — accept (prevState, formData) so client
+ * form components can use React 19's useActionState hook.
+ */
+export async function loginAction(
+  _prev: AuthResult | null,
+  formData: FormData,
+): Promise<AuthResult | null> {
+  return login(formData);
+}
+
+export async function signupAction(
+  _prev: AuthResult | null,
+  formData: FormData,
+): Promise<AuthResult | null> {
+  return signup(formData);
+}
+
 export async function logout() {
   const supabase = await createClient();
   await supabase.auth.signOut();

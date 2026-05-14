@@ -49,3 +49,6 @@ yarn-error.log*
 
 # logs
 *.log
+
+# seed data (may contain private stylist info)
+scripts/seed/data/

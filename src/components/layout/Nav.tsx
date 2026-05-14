@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Logo } from './Logo';
+import { MobileNav } from './MobileNav';
 import { routes } from '@/config/routes';
 import { getSession } from '@/lib/auth/getSession';
 import { logout } from '@/lib/auth/actions';
@@ -42,7 +43,8 @@ export async function Nav() {
         )}
       </ul>
 
-      <div className="flex items-center gap-2">
+      {/* Desktop auth controls */}
+      <div className="hidden items-center gap-2 md:flex">
         {user ? (
           <>
             <Link
@@ -76,6 +78,9 @@ export async function Nav() {
           </>
         )}
       </div>
+
+      {/* Mobile nav (hamburger + drawer) — client component */}
+      <MobileNav user={user} initial={initial} firstName={firstName} />
     </nav>
   );
 }

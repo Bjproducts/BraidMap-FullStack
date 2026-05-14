@@ -3,6 +3,7 @@ import { Instrument_Serif, DM_Mono, Manrope } from 'next/font/google';
 import { Nav } from '@/components/layout/Nav';
 import { Footer } from '@/components/layout/Footer';
 import { SupabaseProvider } from '@/providers/SupabaseProvider';
+import { Toaster } from '@/components/ui/Toast';
 import { siteConfig } from '@/config/site';
 import './globals.css';
 
@@ -64,6 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             {children}
           </main>
           <Footer />
+          <Toaster />
         </SupabaseProvider>
       </body>
     </html>

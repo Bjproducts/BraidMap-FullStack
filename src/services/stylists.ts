@@ -2,6 +2,35 @@ import { createClient } from '@/lib/supabase/server';
 import type { Stylist } from '@/types';
 import { DEFAULT_PAGE_SIZE } from '@/constants';
 
+export async function getCitiesAndTags(): Promise<{ cities: string[]; tags: string[] }> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('stylists')
+    .select('city, tags')
+    .eq('published', true);
+
+  if (!data) return { cities: [], tags: [] };
+
+  const rows = data as Array<{ city: string; tags: string[] }>;
+  const cities = [...new Set(rows.map(r => r.city).filter(Boolean))].sort();
+  const tags   = [...new Set(rows.flatMap(r => r.tags))].sort();
+
+  return { cities, tags };
+}
+
+export async function getStylistsByIds(ids: string[]): Promise<Stylist[]> {
+  if (ids.length === 0) return [];
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('stylists')
+    .select('*')
+    .in('id', ids)
+    .eq('published', true);
+  const rows = (data ?? []) as Stylist[];
+  // Preserve original order
+  return ids.map(id => rows.find(s => s.id === id)).filter((s): s is Stylist => Boolean(s));
+}
+
 export type ListStylistsParams = {
   city?: string;
   tag?: string;
