@@ -9,23 +9,35 @@ import { getUserFavoriteIds } from '@/services/favorites';
 import { getSession } from '@/lib/auth/getSession';
 import { routes } from '@/config/routes';
 import { formatTag } from '@/utils/formatTag';
+import { cn } from '@/utils/cn';
 import { FilterSidebar } from './_components/FilterSidebar';
 import { SearchInput } from './_components/SearchInput';
 import { Pagination } from './_components/Pagination';
+import { BookingLink } from './_components/BookingLink';
+import { GuestDirectorySection } from './_components/GuestDirectorySection';
+import { SortSelect } from './_components/SortSelect';
+import type { SortOption } from '@/services/stylists';
 
 export const metadata = { title: 'Find a stylist' };
 
 export default async function DirectoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ city?: string; tag?: string; q?: string; page?: string }>;
+  searchParams: Promise<{
+    city?: string;
+    tag?: string;
+    q?: string;
+    page?: string;
+    sort?: string;
+  }>;
 }) {
   const sp   = await searchParams;
   const page = sp.page ? Math.max(1, Number(sp.page)) : 1;
+  const sort = (sp.sort as SortOption) ?? 'services';
 
   const [{ cities, tags }, result, session] = await Promise.all([
     getCitiesAndTags().catch(() => ({ cities: [] as string[], tags: [] as string[] })),
-    listStylists({ city: sp.city, tag: sp.tag, q: sp.q, page }).catch(() => ({
+    listStylists({ city: sp.city, tag: sp.tag, q: sp.q, page, sort }).catch(() => ({
       stylists: [],
       total: 0,
       page,
@@ -36,6 +48,15 @@ export default async function DirectoryPage({
 
   const favoriteIds = session ? await getUserFavoriteIds(session.user.id) : [];
   const favoriteSet = new Set(favoriteIds);
+
+  // Build active-filter summary text
+  const filterParts: string[] = [];
+  if (sp.city) filterParts.push(sp.city);
+  if (sp.tag)  filterParts.push(formatTag(sp.tag));
+  if (sp.q)    filterParts.push(`"${sp.q}"`);
+  const filterLabel = filterParts.length > 0
+    ? filterParts.join(' · ')
+    : 'All stylists';
 
   return (
     <>
@@ -80,10 +101,21 @@ export default async function DirectoryPage({
           <FilterSidebar cities={cities} tags={tags} />
         </Suspense>
 
-        <section aria-label="Stylist listings">
+        <div>
+          {/* Sort bar */}
+          <div className="mb-4 flex items-center justify-between gap-3">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-g400">
+              {filterLabel}
+            </p>
+            <Suspense fallback={null}>
+              <SortSelect />
+            </Suspense>
+          </div>
+
           {result.stylists.length === 0 ? (
             <EmptyState hasFilters={!!(sp.city || sp.tag || sp.q)} />
-          ) : (
+          ) : session ? (
+            /* ── Authenticated: full grid ── */
             <>
               <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 xl:grid-cols-3">
                 {result.stylists.map(s => (
@@ -111,7 +143,12 @@ export default async function DirectoryPage({
                           {s.tags.slice(0, 3).map(t => (
                             <span
                               key={t}
-                              className="rounded-sm border border-g200 bg-g100 px-1.5 py-0.5 font-mono text-[10px] text-g600"
+                              className={cn(
+                                'rounded-sm border px-1.5 py-0.5 font-mono text-[10px]',
+                                sp.tag && t === sp.tag
+                                  ? 'border-ink bg-ink text-paper'
+                                  : 'border-g200 bg-g100 text-g600',
+                              )}
                             >
                               {formatTag(t)}
                             </span>
@@ -127,15 +164,7 @@ export default async function DirectoryPage({
 
                     <CardFooter>
                       {s.booking_url ? (
-                        <a
-                          href={s.booking_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={e => e.stopPropagation()}
-                          className="rounded-sm bg-ink px-3 py-1.5 font-sans text-[11px] font-semibold text-paper transition-opacity hover:opacity-75"
-                        >
-                          Book →
-                        </a>
+                        <BookingLink href={s.booking_url} />
                       ) : (
                         <span className="font-serif text-sm italic text-g400">
                           {s.service_count} services
@@ -154,14 +183,23 @@ export default async function DirectoryPage({
                 <Pagination page={page} total={result.total} pageSize={result.pageSize} />
               </Suspense>
             </>
+          ) : (
+            /* ── Guest: gated view ── */
+            <GuestDirectorySection
+              stylists={result.stylists}
+              total={result.total}
+              activeTag={sp.tag}
+            />
           )}
-        </section>
+        </div>
       </Container>
     </>
   );
 }
 
 function EmptyState({ hasFilters }: { hasFilters: boolean }) {
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  const suggestHref = routes.suggest as any;
   return (
     <div className="rounded-lg border border-dashed border-g200 p-16 text-center">
       <p className="mb-3 text-4xl opacity-50" aria-hidden>
@@ -179,9 +217,8 @@ function EmptyState({ hasFilters }: { hasFilters: boolean }) {
           ? 'No stylists match these filters yet — try adjusting or clearing them.'
           : 'The directory is still growing. Check back soon.'}
       </p>
-      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       <Link
-        href={routes.suggest as any}
+        href={suggestHref}
         className="mt-5 inline-flex items-center gap-2 rounded-md bg-ink px-5 py-2.5 text-sm font-semibold text-paper no-underline transition-opacity hover:opacity-85"
       >
         Suggest a stylist →

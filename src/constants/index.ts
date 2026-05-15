@@ -17,6 +17,54 @@ export const REPORT_TYPES = [
 ] as const;
 export type ReportType = (typeof REPORT_TYPES)[number];
 
+export const REPORT_TYPE_ICONS: Record<ReportType, string> = {
+  business_closed: '🚫',
+  wrong_phone:     '📞',
+  wrong_social:    '📱',
+  wrong_location:  '📍',
+  booking_broken:  '🔗',
+  wrong_services:  '✂️',
+  duplicate:       '📋',
+  other:           '💬',
+};
+
+// ── BC cities ────────────────────────────────────────────────────────────────
+
+export const BC_CITIES = [
+  'Abbotsford', 'Burnaby', 'Chilliwack', 'Coquitlam', 'Delta',
+  'Kamloops', 'Kelowna', 'Langley', 'Maple Ridge', 'Mission',
+  'Nanaimo', 'New Westminster', 'North Vancouver', 'Prince George',
+  'Richmond', 'Surrey', 'Vancouver', 'Victoria',
+] as const;
+
+// ── Service categories (match DB tag slugs) ───────────────────────────────────
+
+export const SERVICE_CATEGORIES: { slug: string; label: string }[] = [
+  { slug: 'knotless_braids',  label: 'Knotless Braids' },
+  { slug: 'box_braids',       label: 'Box Braids' },
+  { slug: 'cornrows',         label: 'Cornrows' },
+  { slug: 'twists',           label: 'Twists' },
+  { slug: 'locs_install',     label: 'Locs Installation' },
+  { slug: 'loc_retwist',      label: 'Loc Retwist / Maintenance' },
+  { slug: 'braids_on_locs',   label: 'Braids on Dreadlocks' },
+  { slug: 'extensions',       label: 'Hair Extensions / Sew-In' },
+  { slug: 'wig_install',      label: 'Wig Installs' },
+  { slug: 'custom_wigs',      label: 'Custom Wigs' },
+  { slug: 'wig_maintenance',  label: 'Wig Maintenance' },
+  { slug: 'wig_revamp',       label: 'Wig Revamp' },
+  { slug: 'crochet_faux',     label: 'Crochet / Faux Locs' },
+  { slug: 'mens_braids',      label: "Men's Braids" },
+  { slug: 'kids_braids',      label: "Kids' Braids" },
+  { slug: 'takedown',         label: 'Braid Takedown' },
+  { slug: 'wash_blowdry',     label: 'Wash & Blow Dry' },
+  { slug: 'relaxer',          label: 'Relaxer' },
+  { slug: 'colour',           label: 'Colouring / Hair Colour' },
+  { slug: 'ponytails',        label: 'Ponytails' },
+  { slug: 'bridal',           label: 'Bridal Hair' },
+  { slug: 'silk_press',       label: 'Silk Press' },
+  { slug: 'natural',          label: 'Natural Hair Care' },
+];
+
 export const REPORT_STATUSES = ['open', 'in_review', 'resolved', 'rejected'] as const;
 export type ReportStatus = (typeof REPORT_STATUSES)[number];
 
