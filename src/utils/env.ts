@@ -2,6 +2,10 @@
  * Runtime environment validation.
  * Imported once at the edges of the app (server-side init) — fails loudly
  * if required variables are missing.
+ *
+ * Set SKIP_ENV_VALIDATION=1 in CI / build environments where the real
+ * values aren't available at compile time (e.g. Netlify build phase).
+ * The variables are still required at runtime.
  */
 import { z } from 'zod';
 
@@ -17,12 +21,19 @@ const ServerEnv = ClientEnv.extend({
   SUPABASE_PROJECT_ID: z.string().min(1).optional(),
 });
 
-export const clientEnv = ClientEnv.parse({
-  NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-  NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
-  NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME,
-});
+// During the Next.js build phase env vars may not be present in the build
+// container. Skip validation so the build succeeds; Zod will still catch
+// missing vars at server startup (runtime) when they ARE required.
+const skip = !!process.env.SKIP_ENV_VALIDATION;
+
+export const clientEnv = skip
+  ? (process.env as unknown as z.infer<typeof ClientEnv>)
+  : ClientEnv.parse({
+      NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
+      NEXT_PUBLIC_SITE_NAME: process.env.NEXT_PUBLIC_SITE_NAME,
+    });
 
 /**
  * Server-only env. Only import this from server components / route handlers /
@@ -30,9 +41,11 @@ export const clientEnv = ClientEnv.parse({
  */
 export const serverEnv =
   typeof window === 'undefined'
-    ? ServerEnv.parse({
-        ...clientEnv,
-        SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
-        SUPABASE_PROJECT_ID: process.env.SUPABASE_PROJECT_ID,
-      })
+    ? skip
+      ? (process.env as unknown as z.infer<typeof ServerEnv>)
+      : ServerEnv.parse({
+          ...clientEnv,
+          SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+          SUPABASE_PROJECT_ID: process.env.SUPABASE_PROJECT_ID,
+        })
     : (null as never);

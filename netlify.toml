@@ -7,7 +7,8 @@
   publish   = ".next"
 
 [build.environment]
-  NODE_VERSION = "20"
+  NODE_VERSION          = "20"
+  SKIP_ENV_VALIDATION   = "1"
 
 # Required for Next.js App Router (SSR, Server Actions, Route Handlers)
 [[plugins]]
