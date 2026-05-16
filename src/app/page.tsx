@@ -46,11 +46,11 @@ export default async function HomePage() {
         />
         <Container className="relative grid gap-0 lg:grid-cols-2">
           {/* Left: headline + search */}
-          <div className="flex flex-col justify-center px-6 py-24 sm:px-8 lg:py-32 lg:pr-16">
+          <div className="flex flex-col justify-center px-6 py-14 sm:px-8 sm:py-24 lg:py-32 lg:pr-16">
             <Eyebrow className="mb-5 text-white/30">
               BC&apos;s BIPOC hair directory · Est. 2026
             </Eyebrow>
-            <h1 className="max-w-xl font-serif text-display-xl text-paper">
+            <h1 className="max-w-xl font-serif text-[40px] leading-[1.05] tracking-[-1.5px] text-paper sm:text-display-xl">
               Find your <em className="italic text-paper/40">next</em>
               <br />
               hair stylist
