@@ -1,0 +1,14 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# BraidMap — Netlify configuration
+# ─────────────────────────────────────────────────────────────────────────────
+
+[build]
+  command   = "npm run build"
+  publish   = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Required for Next.js App Router (SSR, Server Actions, Route Handlers)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

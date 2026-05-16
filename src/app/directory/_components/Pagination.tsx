@@ -16,7 +16,6 @@ export function Pagination({ page, total, pageSize }: PaginationProps) {
   const searchParams = useSearchParams();
 
   const totalPages = Math.ceil(total / pageSize);
-  if (totalPages <= 1) return null;
 
   const go = useCallback(
     (p: number) => {
@@ -28,6 +27,8 @@ export function Pagination({ page, total, pageSize }: PaginationProps) {
     },
     [router, pathname, searchParams],
   );
+
+  if (totalPages <= 1) return null;
 
   return (
     <nav

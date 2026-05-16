@@ -3,17 +3,17 @@
  * scattered across components and middleware.
  */
 export const routes = {
-  home:      '/' as '/',
-  directory: '/directory' as '/directory',
+  home:      '/' as const,
+  directory: '/directory' as const,
   stylist:   (slug: string): `/stylist/${string}` => `/stylist/${slug}`,
-  login:     '/login'     as '/login',
-  signup:    '/signup'    as '/signup',
-  dashboard: '/dashboard' as '/dashboard',
-  report:    '/report'    as '/report',
-  suggest:   '/suggest'   as '/suggest',
-  admin:     '/admin'     as '/admin',
+  login:     '/login'     as const,
+  signup:    '/signup'    as const,
+  dashboard: '/dashboard' as const,
+  report:    '/report'    as const,
+  suggest:   '/suggest'   as const,
+  admin:     '/admin'     as const,
   api: {
-    health: '/api/health' as '/api/health',
+    health: '/api/health' as const,
   },
 };
 
