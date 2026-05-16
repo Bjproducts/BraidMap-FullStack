@@ -52,3 +52,6 @@ yarn-error.log*
 
 # seed data (may contain private stylist info)
 scripts/seed/data/
+
+# claude code worktrees (git-linked dirs that break CI clones)
+.claude/worktrees/
