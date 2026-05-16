@@ -1,5 +1,5 @@
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { SignupForm } from './_components/SignupForm';
+import SignupForm from './_components/SignupForm';
 
 export const metadata = { title: 'Sign up' };
 

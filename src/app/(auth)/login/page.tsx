@@ -1,5 +1,5 @@
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { LoginForm } from './_components/LoginForm';
+import LoginForm from './_components/LoginForm';
 
 export const metadata = { title: 'Log in' };
 

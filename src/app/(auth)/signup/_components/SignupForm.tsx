@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { routes } from '@/config/routes';
 import { signupAction, type AuthResult } from '@/lib/auth/actions';
 
-export function SignupForm() {
+export default function SignupForm() {
   const [state, action, pending] = useActionState<AuthResult | null, FormData>(
     signupAction,
     null,

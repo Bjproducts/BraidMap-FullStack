@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { routes } from '@/config/routes';
 import { loginAction, type AuthResult } from '@/lib/auth/actions';
 
-export function LoginForm() {
+export default function LoginForm() {
   const [state, action, pending] = useActionState<AuthResult | null, FormData>(
     loginAction,
     null,
